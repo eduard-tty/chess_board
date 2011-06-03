@@ -5,12 +5,9 @@
 %%% @end
 %%%---------------------------------------------------------------------
 
-%
-% Next task to make this into a server.
-% 
-% { move, XX-XX } -> .
-% boad -> Board
-%
+% TODO:
+% - Next task to make this into a server.
+% - add @spec documentation to function.
 
 -module(chessboard_server).
 
@@ -19,7 +16,7 @@
 -export([ % chessboard functions
 	   setup/0   
 	 , move/2
-	 , show/1    
+	 , display/1    
 	 , test/0
  ]).
 
@@ -32,15 +29,44 @@
 	  , code_change/3
 ]).
 
+-export([ % chessboard_server infterface 
+	    start_link/0
+	  , start_link/1
+	  , stop/0
+	  , move/1
+	  , show/0
+]).
+
 -import(io).
 -import(lists).
+
+
+-define(SERVER, ?MODULE).
+-define(DEFAULT_PORT, 1113).
+
+%% -------------------- chessboard_server API --------------------------
+
+start_link() ->
+    start_link( ?DEFAULT_PORT ).
+
+start_link(Port) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [Port], []).
+
+stop() ->
+    gen_server:cast(?SERVER, stop).
+
+move(Move) ->
+    gen_server:cast(?SERVER, { move, Move }).
+
+show() ->
+    { ok, Board } = gen_server:call(?SERVER, { show } ),
+    display(Board).
 
 %% -------------------- gen_server API ---------------------------------
 
 init([]) ->
     State = setup(),
     {ok, State}.
-
 
 handle_call(_Request, _Sender, State) ->
     {reply, ok, State}.
@@ -85,15 +111,15 @@ move(Board, [ C1, R1, $- , C2 , R2 ] ) ->
     {Board3, _ }     = replace(Board2, R2 - $0, C2 -$a +1, Piece), 
     Board3.
 
-show_rows( I, [ Row | Rows ] ) ->
+display_rows( I, [ Row | Rows ] ) ->
     io:format("    ~s~s~s~s~s~s~s~s", Row ),
     io:format("  ~B~n", [I] ),
-    show_rows(I-1, Rows);	
-show_rows( I , [] ) -> I . 
+    display_rows(I-1, Rows);	
+display_rows( I , [] ) -> I . 
 
-show(Board) -> 	
+display(Board) -> 	
     io:format("~n", []),
-    show_rows(8,Board),
+    display_rows(8,Board),
     io:nl(),	
     io:format("    abcdefgh~n~n", []).
 
@@ -105,7 +131,7 @@ play(Board, [Move | Moves ]) ->
 test() -> 
     B = setup(),
     B2 = play(B, [ "e2-e4", "e7-e5", "b1-c3" ] ),
-    show(B2).
+    display(B2).
 
 
 	
