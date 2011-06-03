@@ -19,17 +19,20 @@
 
 
 setup() -> [ 
-	[ 't', 'k', 'b', 'k', 'q', 'b', 'k', 't' ], % row 1
-	[ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' ],
-	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
-	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
-	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
-	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
-	[ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' ],
-	[ 'T', 'K', 'B', 'K', 'Q', 'B', 'K', 'T' ]  % row 8
+	[ 't', 'n', 'b', 'k', 'q', 'b', 'n', 't' ], % 8
+	[ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' ], % 7
+	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 6
+	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 5
+	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 4
+	[ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 3
+	[ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' ], % 2
+	[ 'T', 'N', 'B', 'K', 'Q', 'B', 'N', 'T' ]  % 1
+	%  a    b    c    d    e    f    g    h
 ].
 
-replace( Board, RowIndex, ColIndex, Piece ) -> 
+replace( Board, BoardRowIndex, BoardColIndex, Piece ) ->
+	RowIndex = 8 - BoardRowIndex,
+	ColIndex = BoardColIndex -1,
 	{ BeforeRows, [ OldRow | AfterRows ] } = lists:split(RowIndex, Board ),
 	{ BeforePieces, [ OldPiece | AfterPieces ] } = lists:split(ColIndex, OldRow), 
 	NewRow = BeforePieces ++ [ Piece ] ++ AfterPieces,
@@ -46,12 +49,21 @@ move(Board, [ C1, R1, $- , C2 , R2 ] ) ->
 move(_, Move) -> { error, "Illegal move: " ++ Move }.
 
 
-show(Board) -> 	io:nl(),
-        	lists:foreach( fun(X) -> io:format("~s~s~s~s~s~s~s~s~n", X) end , Board ),
-	        io:nl()
-	        .
+show(Board) -> 	
+			io:format("~n", []),
+	        lists:foreach( fun(X) -> io:format("1 ~s~s~s~s~s~s~s~s~n", X) end , Board ),
+	        io:nl(),	
+	        io:format("  abcdefgh~n~n", []).
+
+play(Board, []) -> Board;
+play(Board, [Move | Moves ]) -> 
+	Board2 = move(Board, Move),
+	play(Board2, Moves).
 
 test() -> 
 	B = setup(),
-	replace(B, 0, 5, 'X')  
-	.	
+	B2 = play(B, [ "e2-e4", "e7-e5", "b1-c3" ] ),
+	show(B2).
+
+
+	
