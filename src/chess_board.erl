@@ -37,23 +37,25 @@ replace( Board, BoardRowIndex, BoardColIndex, Piece ) ->
 	{ BeforePieces, [ OldPiece | AfterPieces ] } = lists:split(ColIndex, OldRow), 
 	NewRow = BeforePieces ++ [ Piece ] ++ AfterPieces,
 	NewBoard = BeforeRows ++ [ NewRow ] ++ AfterRows,
-	{ NewBoard, OldPiece }
-	.
+	{ NewBoard, OldPiece }.
 
 move(Board, [ C1, R1, $- , C2 , R2 ] ) -> 
 	{Board2, Piece } = replace(Board, R1 - $0, C1 -$a +1, ' '),
 	{Board3, _ }     = replace(Board2, R2 - $0, C2 -$a +1, Piece), 
-	Board3
-	;
+	Board3.
 
-move(_, Move) -> { error, "Illegal move: " ++ Move }.
-
+show_rows( I, [ Row | Rows ] ) ->
+	io:format("    ~s~s~s~s~s~s~s~s", Row ),
+	io:format("  ~B~n", [I] ),
+	show_rows(I-1, Rows);
+	
+show_rows( I , [] ) -> I . 
 
 show(Board) -> 	
 			io:format("~n", []),
-	        lists:foreach( fun(X) -> io:format("1 ~s~s~s~s~s~s~s~s~n", X) end , Board ),
+			show_rows(8,Board),
 	        io:nl(),	
-	        io:format("  abcdefgh~n~n", []).
+	        io:format("    abcdefgh~n~n", []).
 
 play(Board, []) -> Board;
 play(Board, [Move | Moves ]) -> 
