@@ -4,6 +4,7 @@
 %%% @doc Chess board utilitties. Excersize software.
 %%% @end
 %%%---------------------------------------------------------------------
+
 -module(chess_board).
 
 -export([
@@ -30,15 +31,15 @@ setup() -> [
 
 replace( Board, RowIndex, ColIndex, Piece ) -> 
 	{ BeforeRows, [ OldRow | AfterRows ] } = lists:split(RowIndex, Board ),
-	{ BeforePieces, [ OldPiece | AfterPieces ] } = lists:splis(ColIndex, OldRow), 
+	{ BeforePieces, [ OldPiece | AfterPieces ] } = lists:split(ColIndex, OldRow), 
 	NewRow = BeforePieces ++ [ Piece ] ++ AfterPieces,
-	NewBoard = BeforeRow ++ [ NewRow ], ++ AfterRows,
+	NewBoard = BeforeRows ++ [ NewRow ] ++ AfterRows,
 	{ NewBoard, OldPiece }
 	.
 
-move(Board, [ C1, R1, $- , _C2 , _R2 ] ) -> 
+move(Board, [ C1, R1, $- , C2 , R2 ] ) -> 
 	{Board2, Piece } = replace(Board, R1 - $0, C1 -$a +1, ' '),
-	{Board3, _ }     = replace(Board3, R2 - $0, C2 -$a +1, Piece), 
+	{Board3, _ }     = replace(Board2, R2 - $0, C2 -$a +1, Piece), 
 	Board3
 	;
 
@@ -50,6 +51,7 @@ show(Board) -> 	io:nl(),
 	        io:nl()
 	        .
 
-test() -> B = setup(),
-	  move(B, "e1-e4")
-	  .	
+test() -> 
+	B = setup(),
+	replace(B, 0, 5, 'X')  
+	.	
