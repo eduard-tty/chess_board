@@ -5,18 +5,59 @@
 %%% @end
 %%%---------------------------------------------------------------------
 
+%
+% Next task to make this into a server.
+% 
+% { move, XX-XX } -> .
+% boad -> Board
+%
+
 -module(chess_board).
 
--export([
-	 setup/0   
-	 ,move/2
-	 ,show/1    
-	 ,test/0
+-behaviour(gen_server).
+
+-export([ % chess_board functions
+	   setup/0   
+	 , move/2
+	 , show/1    
+	 , test/0
  ]).
+
+-export([ % gen_server interface
+	    init/1
+	  , handle_call/3
+	  , handle_cast/2
+	  , handle_info/2
+	  , terminate/2
+	  , code_change/3
+]).
 
 -import(io).
 -import(lists).
 
+%% -------------------- gen_server API ---------------------------------
+
+init([]) ->
+    State = setup(),
+    {ok, State}.
+
+
+handle_call(_Request, _Sender, State) ->
+    {reply, ok, State}.
+
+handle_cast(_Message, State) ->
+    {noreply, State}.
+
+handle_info(_Info, State) ->
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+code_change(_OldVersion, State, _Extra) ->
+    {ok, State}.
+
+%% -------------------- chess_board API --------------------------------
 
 setup() -> [ 
 	     [ 't', 'n', 'b', 'k', 'q', 'b', 'n', 't' ], % 8
