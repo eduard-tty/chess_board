@@ -12,11 +12,11 @@
 % boad -> Board
 %
 
--module(chess_board).
+-module(chessboard_server).
 
 -behaviour(gen_server).
 
--export([ % chess_board functions
+-export([ % chessboard functions
 	   setup/0   
 	 , move/2
 	 , show/1    
@@ -57,7 +57,7 @@ terminate(_Reason, _State) ->
 code_change(_OldVersion, State, _Extra) ->
     {ok, State}.
 
-%% -------------------- chess_board API --------------------------------
+%% -------------------- chessboard API --------------------------------
 
 setup() -> [ 
 	     [ 't', 'n', 'b', 'k', 'q', 'b', 'n', 't' ], % 8
