@@ -8,8 +8,8 @@
 % TODO:
 % - make it an application
 % - add @spec documentation to function.
+% - split into more modules
 % - error handling
-% - move cbhess code to separete module
 
 -module(chessboard_server).
 
@@ -44,7 +44,7 @@
 
 
 -define(SERVER, ?MODULE).
--define(DEFAULT_PORT, 1113).
+-define(DEFAULT_PORT, 1055).
 
 %% -------------------- chessboard_server API --------------------------
 
@@ -61,7 +61,7 @@ move(Move) ->
     gen_server:cast(?SERVER, { move, Move }).
 
 show() ->
-    { ok, Board } = gen_server:call(?SERVER, { show } ),
+    { ok, Board } = gen_server:call(?SERVER, show ),
     display(Board).
 
 %% -------------------- gen_server API ---------------------------------
@@ -70,7 +70,7 @@ init([_Port]) ->
     State = setup(),
     {ok, State}.
 
-handle_call(_Request, _Sender, State) ->
+handle_call( show, _Sender, State) ->
     {reply, {ok, State }, State}.
 
 
@@ -93,17 +93,18 @@ code_change(_OldVersion, State, _Extra) ->
 
 %% -------------------- chessboard API --------------------------------
 
-setup() -> [
-         [ 't', 'n', 'b', 'k', 'q', 'b', 'n', 't' ], % 8
-         [ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' ], % 7
-         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 6
-         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 5
-         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 4
-         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 3
-         [ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' ], % 2
-         [ 'T', 'N', 'B', 'K', 'Q', 'B', 'N', 'T' ]  % 1
-         %  a    b    c    d    e    f    g    h
-       ].
+setup() ->
+    [
+        [ 't', 'n', 'b', 'k', 'q', 'b', 'n', 't' ], % 8
+        [ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' ], % 7
+        [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 6
+        [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 5
+        [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 4
+        [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ], % 3
+        [ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' ], % 2
+        [ 'T', 'N', 'B', 'K', 'Q', 'B', 'N', 'T' ]  % 1
+        %  a    b    c    d    e    f    g    h
+    ].
 
 replace( Board, BoardRowIndex, BoardColIndex, Piece ) ->
     RowIndex = 8 - BoardRowIndex,
@@ -126,10 +127,9 @@ display_rows( I, [ Row | Rows ] ) ->
 display_rows( I , [] ) -> I .
 
 display(Board) ->
-    io:format("~n", []),
-    display_rows(8,Board),
     io:nl(),
-    io:format("    abcdefgh~n~n", []).
+    display_rows(8,Board),
+    io:format("~n    abcdefgh~n~n", []).
 
 play(Board, []) -> Board;
 play(Board, [Move | Moves ]) ->
