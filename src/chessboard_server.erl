@@ -6,8 +6,10 @@
 %%%---------------------------------------------------------------------
 
 % TODO:
-% - Next task to make this into a server.
+% - make it an application
 % - add @spec documentation to function.
+% - error handling
+% - move cbhess code to separete module
 
 -module(chessboard_server).
 
@@ -69,10 +71,16 @@ init([_Port]) ->
     {ok, State}.
 
 handle_call(_Request, _Sender, State) ->
-    {reply, ok, State}.
+    {reply, {ok, State }, State}.
 
-handle_cast(_Message, State) ->
-    {noreply, State}.
+
+handle_cast(stop, State) -> {stop, normal, State }; % Stop
+
+
+handle_cast({move, Move}, State) -> % Move
+    NewState = move(State, Move),
+    {noreply, NewState}.
+
 
 handle_info(_Info, State) ->
     {noreply, State}.
