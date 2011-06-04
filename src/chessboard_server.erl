@@ -6,7 +6,6 @@
 %%%---------------------------------------------------------------------
 
 % TODO:
-% - make it an application
 % - add @spec documentation to function.
 % - split into more modules
 % - error handling

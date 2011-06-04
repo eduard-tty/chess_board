@@ -20,7 +20,10 @@ init([]) ->
     Server = {
         chessboard_server,
         { chessboard_server, start_link, [] },
-        permanent, 2000, worker, [chessboard_server]
+        permanent,
+        2000,
+        worker,
+        [chessboard_server]
     },
     Children = [ Server ],
     RestartStrategy = { one_for_one, 0, 1},
