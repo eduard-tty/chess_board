@@ -3,3 +3,10 @@ This is an erlang chess board.
 The purpose of this project is to refresh my knowledge of Erlang and nothign more.
 
 eduard@tty.nl
+
+To start:
+
+	erlc -o ebin src/*.erl
+	erl -pa ebin
+
+	application:start(chessboard).

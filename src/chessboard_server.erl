@@ -1,7 +1,7 @@
 %%%---------------------------------------------------------------------
 %%% @author Eduard Lohmann <eduard@tty.nl>
 %%% @copyright 2011 Eduard Lohmann
-%%% @doc Chess board utilitties. Excersize software.
+%%% @doc Chess board Server
 %%% @end
 %%%---------------------------------------------------------------------
 
