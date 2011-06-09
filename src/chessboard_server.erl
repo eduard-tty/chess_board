@@ -7,8 +7,8 @@
 
 % TODO:
 % - add @spec documentation to function.
-% - split into more modules
 % - error handling
+% - allow for tcp connections
 
 -module(chessboard_server).
 
@@ -45,6 +45,8 @@
 -define(SERVER, ?MODULE).
 -define(DEFAULT_PORT, 1055).
 
+-record(state, {port, socket, board }).
+
 %% -------------------- chessboard_server API --------------------------
 
 start_link() ->
@@ -65,30 +67,27 @@ show() ->
 
 %% -------------------- gen_server API ---------------------------------
 
-init([_Port]) ->
-    State = setup(),
-    {ok, State}.
+init([Port]) -> 
+    {ok, Socket} = gen_tcp:listen(Port, [{active, true}]),
+    Board = setup(), 
+    {ok, #state{port=Port, socket=Socket, board=Board} }.
 
-handle_call( show, _Sender, State) ->
-    {reply, {ok, State }, State}.
-
+handle_call( show, _Sender, State) -> {reply, {ok, State }, State}.
 
 handle_cast(stop, State) -> {stop, normal, State }; % Stop
 
+handle_cast({move, Move}, State) -> NewState = move(State, Move), {noreply, NewState}. % Move 
 
-handle_cast({move, Move}, State) -> % Move
-    NewState = move(State, Move),
-    {noreply, NewState}.
-
-
-handle_info(_Info, State) ->
+handle_info(timeout, #state{socket=Socket} = State) -> 
+    {ok, _Socket} = gen_tcp:accept(Socket),
+    {noreply, State};
+handle_info({tcp, Socket, RawData}, State ) ->
+    io:format("Socet:~p   Data:~p~n", [Socket, RawData]),
     {noreply, State}.
 
-terminate(_Reason, _State) ->
-    ok.
+terminate(_Reason, _State) -> ok.
 
-code_change(_OldVersion, State, _Extra) ->
-    {ok, State}.
+code_change(_OldVersion, State, _Extra) -> {ok, State}.
 
 %% -------------------- chessboard API --------------------------------
 
